@@ -1,4 +1,5 @@
 import React from 'react'
+import { Button } from "@/components/ui/button"
 
 const App = () => {
   return (
@@ -6,6 +7,7 @@ const App = () => {
       <h1 className="text-4xl font-bold text-emerald-400">
         Tailwind v4 Sukses Terpasang! 🚀
       </h1>
+      <Button>Click me</Button>
     </div>
   )
 }
