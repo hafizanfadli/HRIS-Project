@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import * as Device from 'expo-device';
 import { Modal, Platform, Pressable, StyleSheet, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
 
 import { AnimatedIcon } from '@/components/animated-icon';
 import { ThemedText } from '@/components/themed-text';
@@ -16,13 +17,15 @@ export default function HomeScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  // State untuk Kontrol Pop-Up Modal
+  // State untuk Kontrol Pop-Up Modal (Hanya Digunakan Untuk Error)
   const [modalVisible, setModalVisible] = useState(false);
   const [modalTitle, setModalTitle] = useState('');
   const [modalMessage, setModalMessage] = useState('');
 
-  // Fungsi Pemicu Pop-Up
-  const showPopup = (title: string, message: string) => {
+  const router = useRouter();
+
+  // Fungsi Pemicu Pop-Up Error
+  const showErrorPopup = (title: string, message: string) => {
     setModalTitle(title);
     setModalMessage(message);
     setModalVisible(true);
@@ -34,7 +37,7 @@ export default function HomeScreen() {
 
     // 1. Validasi input kosong
     if (!trimmedEmail || !trimmedPass) {
-      showPopup('Login Error', 'Email dan Password tidak boleh kosong!');
+      showErrorPopup('Login Error', 'Email dan Password tidak boleh kosong!');
       return;
     }
 
@@ -42,15 +45,18 @@ export default function HomeScreen() {
     const userIndex = REGISTERED_USERS.indexOf(trimmedEmail.toLowerCase());
 
     if (userIndex === -1) {
-      showPopup('Email Tidak Ditemukan', `Email "${trimmedEmail}" tidak terdaftar dalam sistem.`);
+      showErrorPopup('Email Tidak Ditemukan', `Email "${trimmedEmail}" tidak terdaftar dalam sistem.`);
       return;
     }
 
     // 3. Verifikasi password sesuai indeks email
     if (REGISTERED_PASSWORDS[userIndex] !== trimmedPass) {
-      showPopup('Password Salah', 'Password yang Anda masukkan salah. Silakan coba lagi.');
+      showErrorPopup('Password Salah', 'Password yang Anda masukkan salah. Silakan coba lagi.');
       return;
     }
+
+    // 4. Jika login berhasil -> LANGSUNG NAVIGASI TANPA POP-UP
+    router.replace("/mainmenu");
   };
 
   return (
@@ -108,7 +114,7 @@ export default function HomeScreen() {
 
         {Platform.OS === 'web' && <WebBadge />}
 
-        {/* --- KOMPONEN POP-UP MODAL KUSTOM --- */}
+        {/* --- KOMPONEN POP-UP MODAL (HANYA UNTUK ERROR) --- */}
         <Modal
           animationType="fade"
           transparent={true}
